@@ -1,14 +1,36 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { UserService } from './services/user-api.service';
+import { User } from './models/User';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
+  providers: [UserService], // Fornecer o UserService aqui, se necessário
+  imports: [CommonModule],
+  template: `
+    <li *ngFor="let user of users">
+      <img src="{{user.image}}" alt="user image">
+    </li>
+  `
+  
 })
-export class AppComponent {
-  title = 'ProvaFinal';
-}
+export class AppComponent implements OnInit {
+  users: User[] = [];
+  user: User = {image: ''};
+
+
+  constructor(private service: UserService) {}
+  ngOnInit() {
+    this.service.getUsers().subscribe(
+      (data: any) => {
+        if (data && data.users) {
+          this.users = data.users;
+        }
+      }
+    );
+  }
+  }
+
